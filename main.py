@@ -1,5 +1,10 @@
-
 # %% [markdown]
+# # UAS Inteligensi Buatan - Klasifikasi Iris Dataset
+# **Kelompok**: 
+# **Anggota**:
+# 1. 123140004 - Daniel Calvin Simanjuntak
+# 2. 123140022 - Reyhan Capri Moraga 
+# 3. 123140024 - Rifka Priseilla Br Silitonga 
 
 # %%
 import pandas as pd
@@ -8,6 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
+# Library Machine Learning & Neural Network
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import classification_report, confusion_matrix
@@ -17,7 +23,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.layers import Input
 
-
+# Konfigurasi
 DATA_PATH = 'data/IRIS.csv'
 OUTPUT_PATH = 'output/'
 os.makedirs(OUTPUT_PATH, exist_ok=True)
@@ -26,6 +32,7 @@ sns.set(style="whitegrid")
 print(f"TensorFlow Version: {tf.__version__}")
 
 # %% [markdown]
+# ## Bab 1: Pemahaman & Preprocessing Dataset
 
 # %%
 # Load Data
@@ -33,23 +40,26 @@ try:
     df = pd.read_csv(DATA_PATH)
     print("Dataset loaded successfully.")
 except FileNotFoundError:
-    sys.exit(f"Critical Error: {DATA_PATH} not found. Did you move the Kaggle csv file there?")
+    print(f"Error: {DATA_PATH} not found.")
 
-df.columns = df.columns.str.lower()
+# Drop Id column if exists
+if 'Id' in df.columns:
+    df = df.drop(columns=['Id'])
 
-if 'id' in df.columns:
-    df = df.drop(columns=['id'])
-
-print("Columns found:", df.columns.tolist())
 print(df.head())
 
-
+# %%
+# Visualisasi Data (Scatter Plot)
 sns.pairplot(df, hue="species", markers=["o", "s", "D"])
 plt.suptitle("Visualisasi Fitur Iris", y=1.02)
 plt.savefig(f"{OUTPUT_PATH}data_visualization.png")
 plt.show()
 
+# %% [markdown]
+# ## Subbab 1.2: Preprocessing
 
+# %%
+# Encoding Species -> One Hot
 target_col = 'species' if 'species' in df.columns else 'Species'
 encoder = LabelEncoder()
 y = encoder.fit_transform(df[target_col])
@@ -65,7 +75,8 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_cat, test_size=0
 print(f"Training shape: {X_train.shape}, Testing shape: {X_test.shape}")
 
 # %% [markdown]
-
+# ## Bab 2: Arsitektur ANN
+# Menggunakan 2 Hidden Layers dengan ReLU dan Output Layer dengan Softmax.
 
 # %%
 model = Sequential([
@@ -120,3 +131,7 @@ sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=encoder.classes_,
 plt.title('Confusion Matrix')
 plt.savefig(f"{OUTPUT_PATH}confusion_matrix.png")
 plt.show()
+
+# %% [markdown]
+# ## Kesimpulan
+# Model berhasil mencapai akurasi tinggi pada dataset Iris.
